@@ -1,61 +1,290 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Money Tracker API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend Assessment – Laravel
 
-## About Laravel
+Project Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This project is a backend-only Money Tracker API built using Laravel. The system allows users to manage multiple wallets and track income and expense transactions. The API is designed to be consumed by an external frontend application.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The application supports:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Creating user accounts
 
-## Learning Laravel
+Creating multiple wallets per user
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Adding income and expense transactions
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Viewing wallet balances
 
-## Laravel Sponsors
+Viewing total balance across all wallets
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Viewing transaction history for a wallet
 
-### Premium Partners
+This implementation satisfies all functional and technical requirements of the assessment.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Development Stages
+1. Project Setup
 
-## Contributing
+Installed Laravel using Composer
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Configured environment variables
 
-## Code of Conduct
+Connected the application to MySQL
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Enabled API routing (Laravel 12 configuration)
 
-## Security Vulnerabilities
+2. Database Design and Migrations
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Three main tables were created:
 
-## License
+Users Table
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-"# Backend-money-tracking-api" 
-"# Backend-money-tracking-api" 
+id
+
+name
+
+email
+
+password
+
+timestamps
+
+Wallets Table
+
+id
+
+user_id (foreign key)
+
+name
+
+timestamps
+
+Transactions Table
+
+id
+
+wallet_id (foreign key)
+
+type (income or expense)
+
+amount
+
+description (nullable)
+
+timestamps
+
+Relationships
+
+A User has many Wallets
+
+A Wallet belongs to a User
+
+A Wallet has many Transactions
+
+A Transaction belongs to a Wallet
+
+Foreign keys use cascade delete to maintain referential integrity.
+
+3. Model Layer
+
+Each model includes:
+
+Proper $fillable properties to protect against mass assignment
+
+Eloquent relationships
+
+Clean structure and separation of responsibilities
+
+Wallet balance is calculated dynamically using an accessor method. The balance is derived from transactions:
+
+Income adds to the balance
+
+Expense subtracts from the balance
+
+Balances are not stored in the database to avoid redundancy and ensure consistency.
+
+4. Controllers
+
+Three API controllers were implemented:
+
+UserController
+
+WalletController
+
+TransactionController
+
+Each controller includes:
+
+Store methods for creating resources
+
+Show methods for retrieving resource details
+
+Validation logic
+
+Structured JSON responses
+
+5. Validation
+
+Validation rules ensure data integrity.
+
+User:
+
+Name is required
+
+Email is required and unique
+
+Password is required and must meet minimum length
+
+Wallet:
+
+user_id must exist
+
+Name is required
+
+Transaction:
+
+wallet_id must exist
+
+Type must be either income or expense
+
+Amount must be numeric and positive
+
+Description is optional
+
+API Routes
+
+All routes are defined in routes/api.php.
+
+Method	Endpoint	Description
+POST	/api/users	Create a user
+GET	/api/users/{id}	View user profile
+POST	/api/wallets	Create a wallet
+GET	/api/wallets/{id}	View wallet details
+POST	/api/transactions	Add a transaction
+Business Logic Implementation
+Viewing a User Profile
+
+Returns:
+
+All wallets belonging to the user
+
+Each wallet’s calculated balance
+
+Total balance across all wallets
+
+Viewing a Wallet
+
+Returns:
+
+Wallet balance
+
+All transactions for that wallet
+
+Balance calculations are performed dynamically from transaction records.
+
+How to Run the Project
+1. Clone Repository
+git clone <repository-link>
+cd money-tracker-api
+2. Install Dependencies
+composer install
+3. Configure Environment
+
+Copy .env.example to .env and update database credentials:
+
+DB_DATABASE=money_tracker
+DB_USERNAME=root
+DB_PASSWORD=yourpassword
+4. Generate Application Key
+php artisan key:generate
+5. Run Migrations
+php artisan migrate
+6. Start Development Server
+php artisan serve
+
+Application will run at:
+
+http://127.0.0.1:8000
+Testing the API
+
+Use Thunder Client, Postman, or curl.
+
+Example request to create a user:
+
+POST /api/users
+
+{
+  "name": "Dorwin",
+  "email": "dorwin@example.com",
+  "password": "password123"
+}
+Design Decisions
+
+Dynamic Balance Calculation
+Balances are computed from transactions rather than stored. This ensures consistency and prevents data duplication.
+
+Strong Validation
+Validation prevents negative amounts, invalid transaction types, and invalid foreign keys.
+
+Clean Architecture
+
+Models handle relationships
+
+Controllers handle business logic
+
+Routes define access points
+
+RESTful API Structure
+The API follows REST principles and clear resource-based routing.
+
+Possible Improvements
+
+If extended further, the following enhancements could be implemented:
+
+Authentication using Laravel Sanctum or JWT
+
+Pagination for transactions
+
+API Resource classes for response formatting
+
+Automated feature tests
+
+Soft deletes
+
+Rate limiting
+
+Requirements Coverage
+
+Create user account
+
+Create multiple wallets
+
+Add income transactions
+
+Add expense transactions
+
+Calculate wallet balance
+
+Calculate total user balance
+
+View wallet transactions
+
+Proper database relationships
+
+Input validation
+
+Structured commit history
+
+Conclusion
+
+This Money Tracker API meets all functional and technical requirements of the assessment. The implementation demonstrates:
+
+Proper use of Laravel architecture
+
+Correct use of Eloquent relationships
+
+Clean API design
+
+Data validation best practices
+
+Structured and maintainable code
